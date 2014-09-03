@@ -9,6 +9,7 @@ import (
 	"io"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/mably/btcwire"
 	"github.com/davecgh/go-spew/spew"
@@ -123,7 +124,7 @@ func TestTx(t *testing.T) {
 // TestTxSha tests the ability to generate the hash of a transaction accurately.
 func TestTxSha(t *testing.T) {
 	// Hash of first transaction from block 113875.
-	hashStr := "f051e59b5e2503ac626d03aaeac8ab7be2d72ba4b7e97119c5852d70d52dcb86"
+	hashStr := "1e35dae1e4e61660054f38afccc1c28ca4043551ab81021304e8dd03e37834d1"
 	wantHash, err := btcwire.NewShaHashFromStr(hashStr)
 	if err != nil {
 		t.Errorf("NewShaHashFromStr: %v", err)
@@ -179,6 +180,7 @@ func TestTxWire(t *testing.T) {
 	noTx.Version = 1
 	noTxEncoded := []byte{
 		0x01, 0x00, 0x00, 0x00, // Version
+		0x00, 0x00, 0x00, 0x00, // Time
 		0x00,                   // Varint for number of input transactions
 		0x00,                   // Varint for number of output transactions
 		0x00, 0x00, 0x00, 0x00, // Lock time
@@ -320,30 +322,32 @@ func TestTxWireErrors(t *testing.T) {
 	}{
 		// Force error in version.
 		{multiTx, multiTxEncoded, pver, 0, io.ErrShortWrite, io.EOF},
-		// Force error in number of transaction inputs.
+		// Force error in time.
 		{multiTx, multiTxEncoded, pver, 4, io.ErrShortWrite, io.EOF},
+		// Force error in number of transaction inputs.
+		{multiTx, multiTxEncoded, pver, 4+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input previous block hash.
-		{multiTx, multiTxEncoded, pver, 5, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, pver, 5+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input previous block hash.
-		{multiTx, multiTxEncoded, pver, 5, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, pver, 5+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input previous block output index.
-		{multiTx, multiTxEncoded, pver, 37, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, pver, 37+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input signature script length.
-		{multiTx, multiTxEncoded, pver, 41, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, pver, 41+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input signature script.
-		{multiTx, multiTxEncoded, pver, 42, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, pver, 42+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input sequence.
-		{multiTx, multiTxEncoded, pver, 49, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, pver, 49+4, io.ErrShortWrite, io.EOF},
 		// Force error in number of transaction outputs.
-		{multiTx, multiTxEncoded, pver, 53, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, pver, 53+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction output value.
-		{multiTx, multiTxEncoded, pver, 54, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, pver, 54+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction output pk script length.
-		{multiTx, multiTxEncoded, pver, 62, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, pver, 62+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction output pk script.
-		{multiTx, multiTxEncoded, pver, 63, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, pver, 63+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction output lock time.
-		{multiTx, multiTxEncoded, pver, 130, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, pver, 130+4, io.ErrShortWrite, io.EOF},
 	}
 
 	t.Logf("Running %d tests", len(tests))
@@ -375,6 +379,7 @@ func TestTxSerialize(t *testing.T) {
 	noTx.Version = 1
 	noTxEncoded := []byte{
 		0x01, 0x00, 0x00, 0x00, // Version
+		0x00, 0x00, 0x00, 0x00, // Time
 		0x00,                   // Varint for number of input transactions
 		0x00,                   // Varint for number of output transactions
 		0x00, 0x00, 0x00, 0x00, // Lock time
@@ -443,30 +448,32 @@ func TestTxSerializeErrors(t *testing.T) {
 	}{
 		// Force error in version.
 		{multiTx, multiTxEncoded, 0, io.ErrShortWrite, io.EOF},
-		// Force error in number of transaction inputs.
+		// Force error in time.
 		{multiTx, multiTxEncoded, 4, io.ErrShortWrite, io.EOF},
+		// Force error in number of transaction inputs.
+		{multiTx, multiTxEncoded, 4+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input previous block hash.
-		{multiTx, multiTxEncoded, 5, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, 5+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input previous block hash.
-		{multiTx, multiTxEncoded, 5, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, 5+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input previous block output index.
-		{multiTx, multiTxEncoded, 37, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, 37+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input signature script length.
-		{multiTx, multiTxEncoded, 41, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, 41+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input signature script.
-		{multiTx, multiTxEncoded, 42, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, 42+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction input sequence.
-		{multiTx, multiTxEncoded, 49, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, 49+4, io.ErrShortWrite, io.EOF},
 		// Force error in number of transaction outputs.
-		{multiTx, multiTxEncoded, 53, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, 53+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction output value.
-		{multiTx, multiTxEncoded, 54, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, 54+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction output pk script length.
-		{multiTx, multiTxEncoded, 62, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, 62+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction output pk script.
-		{multiTx, multiTxEncoded, 63, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, 63+4, io.ErrShortWrite, io.EOF},
 		// Force error in transaction output lock time.
-		{multiTx, multiTxEncoded, 130, io.ErrShortWrite, io.EOF},
+		{multiTx, multiTxEncoded, 130+4, io.ErrShortWrite, io.EOF},
 	}
 
 	t.Logf("Running %d tests", len(tests))
@@ -513,6 +520,7 @@ func TestTxOverflowErrors(t *testing.T) {
 		{
 			[]byte{
 				0x00, 0x00, 0x00, 0x01, // Version
+				0x00, 0x00, 0x00, 0x00, // Time
 				0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 				0xff, // Varint for number of input transactions
 			}, pver, txVer, &btcwire.MessageError{},
@@ -522,6 +530,7 @@ func TestTxOverflowErrors(t *testing.T) {
 		{
 			[]byte{
 				0x00, 0x00, 0x00, 0x01, // Version
+				0x00, 0x00, 0x00, 0x00, // Time
 				0x00, // Varint for number of input transactions
 				0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 				0xff, // Varint for number of output transactions
@@ -533,6 +542,7 @@ func TestTxOverflowErrors(t *testing.T) {
 		{
 			[]byte{
 				0x00, 0x00, 0x00, 0x01, // Version
+				0x00, 0x00, 0x00, 0x00, // Time
 				0x01, // Varint for number of input transactions
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -549,6 +559,7 @@ func TestTxOverflowErrors(t *testing.T) {
 		{
 			[]byte{
 				0x00, 0x00, 0x00, 0x01, // Version
+				0x00, 0x00, 0x00, 0x00, // Time
 				0x01, // Varint for number of input transactions
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -600,10 +611,10 @@ func TestTxSerializeSize(t *testing.T) {
 		size int            // Expected serialized size
 	}{
 		// No inputs or outpus.
-		{noTx, 10},
+		{noTx, 14},
 
 		// Transcaction with an input and an output.
-		{multiTx, 134},
+		{multiTx, 138},
 	}
 
 	t.Logf("Running %d tests", len(tests))
@@ -620,6 +631,7 @@ func TestTxSerializeSize(t *testing.T) {
 // multiTx is a MsgTx with an input and output and used in various tests.
 var multiTx = &btcwire.MsgTx{
 	Version: 1,
+	Time: time.Unix(0x4966bc61, 0), // 2009-01-08 20:54:25 -0600 CST
 	TxIn: []*btcwire.TxIn{
 		{
 			PreviousOutpoint: btcwire.OutPoint{
@@ -657,6 +669,7 @@ var multiTx = &btcwire.MsgTx{
 // 60002 and is used in the various tests.
 var multiTxEncoded = []byte{
 	0x01, 0x00, 0x00, 0x00, // Version
+	0x61, 0xbc, 0x66, 0x49, // Time
 	0x01, // Varint for number of input transactions
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
