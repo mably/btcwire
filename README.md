@@ -5,6 +5,7 @@ btcwire
 (https://travis-ci.org/mably/btcwire) [![Coverage Status]
 (https://coveralls.io/repos/mably/btcwire/badge.png?branch=master)]
 (https://coveralls.io/r/mably/btcwire?branch=master)
+[![tip for next commit](http://peer4commit.com/projects/130.svg)](http://peer4commit.com/projects/130)
 
 Package btcwire implements the bitcoin wire protocol.  A comprehensive suite of
 tests with 100% test coverage is provided to ensure proper functionality.
