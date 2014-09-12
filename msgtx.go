@@ -430,16 +430,6 @@ func (msg *MsgTx) MaxPayloadLength(pver uint32) uint32 {
 	return MaxBlockPayload
 }
 
-// https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.h#L528
-// ppcoin: the coin stake transaction is marked with the first output empty
-func (msg *MsgTx) IsCoinStake() bool {
-	return len(msg.TxIn) > 0 &&
-		(!(msg.TxIn[0].PreviousOutpoint.Hash.IsEqual(&ShaHash{}) &&
-			msg.TxIn[0].PreviousOutpoint.Index == MaxPrevOutIndex)) &&
-		len(msg.TxOut) >= 2 &&
-		(msg.TxOut[0].Value == 0 && len(msg.TxOut[0].PkScript) == 0)
-}
-
 // NewMsgTx returns a new bitcoin tx message that conforms to the Message
 // interface.  The return instance has a default version of TxVersion and there
 // are no transaction inputs or outputs.  Also, the lock time is set to zero
