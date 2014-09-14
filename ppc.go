@@ -109,3 +109,11 @@ func (msg *MsgBlock) IsProofOfStake() bool {
 	return len(msg.Transactions) > 1 &&
 		msg.Transactions[1].IsCoinStake()
 }
+
+func (m *Meta) GetSerializedSize() int {
+	return 8 + // StakeModifier         uint64
+		4 + // StakeModifierChecksum uint32
+		32 + // HashProofOfStake      ShaHash
+		4 + // Flags                 uint32
+		1 + len(m.ChainTrust.Bytes()) //ChainTrust            big.Int
+}
