@@ -10,8 +10,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/conformal/btcwire"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/mably/btcwire"
 )
 
 // TestRejectCodeStringer tests the stringized output for the reject code type.

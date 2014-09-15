@@ -9,7 +9,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/conformal/btcwire"
+	"github.com/mably/btcwire"
 )
 
 // TestShaHash tests the ShaHash API.

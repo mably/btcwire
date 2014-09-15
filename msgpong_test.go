@@ -10,8 +10,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/conformal/btcwire"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/mably/btcwire"
 )
 
 // TestPongLatest tests the MsgPong API against the latest protocol version.

@@ -9,6 +9,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"time"
 )
 
 const (
@@ -134,6 +135,7 @@ func NewTxOut(value int64, pkScript []byte) *TxOut {
 // inputs and outputs.
 type MsgTx struct {
 	Version  int32
+	Time     time.Time
 	TxIn     []*TxIn
 	TxOut    []*TxOut
 	LockTime uint32
@@ -175,6 +177,7 @@ func (msg *MsgTx) Copy() *MsgTx {
 	// for the transaction inputs and outputs.
 	newTx := MsgTx{
 		Version:  msg.Version,
+		Time:     msg.Time,
 		TxIn:     make([]*TxIn, 0, len(msg.TxIn)),
 		TxOut:    make([]*TxOut, 0, len(msg.TxOut)),
 		LockTime: msg.LockTime,
@@ -241,6 +244,13 @@ func (msg *MsgTx) BtcDecode(r io.Reader, pver uint32) error {
 		return err
 	}
 	msg.Version = int32(binary.LittleEndian.Uint32(buf[:]))
+
+	_, err = io.ReadFull(r, buf[:])
+	if err != nil {
+		return err
+	}
+	sec := binary.LittleEndian.Uint32(buf[:])
+	msg.Time = time.Unix(int64(sec), 0)
 
 	count, err := readVarInt(r, pver)
 	if err != nil {
@@ -330,6 +340,12 @@ func (msg *MsgTx) BtcEncode(w io.Writer, pver uint32) error {
 		return err
 	}
 
+	binary.LittleEndian.PutUint32(buf[:], uint32(msg.Time.Unix()))
+	_, err = w.Write(buf[:])
+	if err != nil {
+		return err
+	}
+
 	count := uint64(len(msg.TxIn))
 	err = writeVarInt(w, pver, count)
 	if err != nil {
@@ -386,9 +402,9 @@ func (msg *MsgTx) Serialize(w io.Writer) error {
 // SerializeSize returns the number of bytes it would take to serialize the
 // the transaction.
 func (msg *MsgTx) SerializeSize() int {
-	// Version 4 bytes + LockTime 4 bytes + Serialized varint size for the
-	// number of transaction inputs and outputs.
-	n := 8 + VarIntSerializeSize(uint64(len(msg.TxIn))) +
+	// Version 4 bytes + Time 4 bytes+ LockTime 4 bytes + Serialized varint
+	// size for the number of transaction inputs and outputs.
+	n := 12 + VarIntSerializeSize(uint64(len(msg.TxIn))) +
 		VarIntSerializeSize(uint64(len(msg.TxOut)))
 
 	for _, txIn := range msg.TxIn {
@@ -422,6 +438,7 @@ func (msg *MsgTx) MaxPayloadLength(pver uint32) uint32 {
 func NewMsgTx() *MsgTx {
 	return &MsgTx{
 		Version: TxVersion,
+		Time:    time.Unix(int64(0), 0),
 		TxIn:    make([]*TxIn, 0, defaultTxInOutAlloc),
 		TxOut:   make([]*TxOut, 0, defaultTxInOutAlloc),
 	}

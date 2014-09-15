@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/conformal/btcwire"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/mably/btcwire"
 )
 
 // TestNetAddress tests the NetAddress API.

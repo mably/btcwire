@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/conformal/btcwire"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/mably/btcwire"
 )
 
 // TestFilterCLearLatest tests the MsgFilterClear API against the latest

@@ -10,7 +10,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/conformal/btcwire"
+	"github.com/mably/btcwire"
 )
 
 // TestFilterCLearLatest tests the MsgFilterLoad API against the latest protocol

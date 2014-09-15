@@ -1,10 +1,11 @@
 btcwire
 =======
 
-[![Build Status](https://travis-ci.org/conformal/btcwire.png?branch=master)]
-(https://travis-ci.org/conformal/btcwire) [![Coverage Status]
-(https://coveralls.io/repos/conformal/btcwire/badge.png?branch=master)]
-(https://coveralls.io/r/conformal/btcwire?branch=master)
+[![Build Status](https://travis-ci.org/mably/btcwire.png?branch=master)]
+(https://travis-ci.org/mably/btcwire) [![Coverage Status]
+(https://coveralls.io/repos/mably/btcwire/badge.png?branch=master)]
+(https://coveralls.io/r/mably/btcwire?branch=master)
+[![tip for next commit](http://peer4commit.com/projects/130.svg)](http://peer4commit.com/projects/130)
 
 Package btcwire implements the bitcoin wire protocol.  A comprehensive suite of
 tests with 100% test coverage is provided to ensure proper functionality.
@@ -21,21 +22,21 @@ interface with bitcoin peers at the wire protocol level.
 
 ## Documentation
 
-[![GoDoc](https://godoc.org/github.com/conformal/btcwire?status.png)]
-(http://godoc.org/github.com/conformal/btcwire)
+[![GoDoc](https://godoc.org/github.com/mably/btcwire?status.png)]
+(http://godoc.org/github.com/mably/btcwire)
 
 Full `go doc` style documentation for the project can be viewed online without
 installing this package by using the GoDoc site here:
-http://godoc.org/github.com/conformal/btcwire
+http://godoc.org/github.com/mably/btcwire
 
 You can also view the documentation locally once the package is installed with
 the `godoc` tool by running `godoc -http=":6060"` and pointing your browser to
-http://localhost:6060/pkg/github.com/conformal/btcwire
+http://localhost:6060/pkg/github.com/mably/btcwire
 
 ## Installation
 
 ```bash
-$ go get github.com/conformal/btcwire
+$ go get github.com/mably/btcwire
 ```
 
 ## Bitcoin Message Overview

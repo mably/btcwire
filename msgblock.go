@@ -40,6 +40,7 @@ type TxLoc struct {
 type MsgBlock struct {
 	Header       BlockHeader
 	Transactions []*MsgTx
+	Signature    []byte
 }
 
 // AddTransaction adds a transaction to the message.
@@ -86,6 +87,12 @@ func (msg *MsgBlock) BtcDecode(r io.Reader, pver uint32) error {
 			return err
 		}
 		msg.Transactions = append(msg.Transactions, &tx)
+	}
+
+	msg.Signature, err = readVarBytes(r, pver, MaxMessagePayload,
+		"block signature")
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -150,6 +157,12 @@ func (msg *MsgBlock) DeserializeTxLoc(r *bytes.Buffer) ([]TxLoc, error) {
 		txLocs[i].TxLen = (fullLen - r.Len()) - txLocs[i].TxStart
 	}
 
+	msg.Signature, err = readVarBytes(r, 0, MaxMessagePayload,
+		"block signature")
+	if err != nil {
+		return nil, err
+	}
+
 	return txLocs, nil
 }
 
@@ -173,6 +186,11 @@ func (msg *MsgBlock) BtcEncode(w io.Writer, pver uint32) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	err = writeVarBytes(w, pver, msg.Signature)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -204,6 +222,8 @@ func (msg *MsgBlock) SerializeSize() int {
 	for _, tx := range msg.Transactions {
 		n += tx.SerializeSize()
 	}
+
+	n += VarIntSerializeSize(uint64(len(msg.Signature))) + len(msg.Signature)
 
 	return n
 }
@@ -246,5 +266,6 @@ func NewMsgBlock(blockHeader *BlockHeader) *MsgBlock {
 	return &MsgBlock{
 		Header:       *blockHeader,
 		Transactions: make([]*MsgTx, 0, defaultTransactionAlloc),
+		Signature:    []byte{},
 	}
 }

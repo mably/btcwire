@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/conformal/btcwire"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/mably/btcwire"
 )
 
 // TestMerkleBlock tests the MsgMerkleBlock API.

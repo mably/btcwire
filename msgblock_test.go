@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/conformal/btcwire"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/mably/btcwire"
 )
 
 // TestBlock tests the MsgBlock API.
@@ -73,7 +73,7 @@ func TestBlock(t *testing.T) {
 // hashes from a block accurately.
 func TestBlockTxShas(t *testing.T) {
 	// Block 1, transaction 1 hash.
-	hashStr := "0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098"
+	hashStr := "0ff6171c70f2bf88b721d30caef0a196d308a0039c306aa8d39565d019d4a5ea"
 	wantHash, err := btcwire.NewShaHashFromStr(hashStr)
 	if err != nil {
 		t.Errorf("NewShaHashFromStr: %v", err)
@@ -461,7 +461,7 @@ func TestBlockSerializeSize(t *testing.T) {
 		size int               // Expected serialized size
 	}{
 		// Block with no transactions.
-		{noTxBlock, 81},
+		{noTxBlock, 82},
 
 		// First block in the mainnet block chain.
 		{&blockOne, len(blockOneBytes)},
@@ -501,6 +501,7 @@ var blockOne = btcwire.MsgBlock{
 	Transactions: []*btcwire.MsgTx{
 		{
 			Version: 1,
+			Time:    time.Unix(0x4966bc61, 0), // 2009-01-08 20:54:25 -0600 CST
 			TxIn: []*btcwire.TxIn{
 				{
 					PreviousOutpoint: btcwire.OutPoint{
@@ -534,6 +535,7 @@ var blockOne = btcwire.MsgBlock{
 			LockTime: 0,
 		},
 	},
+	Signature: []byte{},
 }
 
 // Block one serialized bytes.
@@ -552,6 +554,7 @@ var blockOneBytes = []byte{
 	0x01, 0xe3, 0x62, 0x99, // Nonce
 	0x01,                   // TxnCount
 	0x01, 0x00, 0x00, 0x00, // Version
+	0x61, 0xbc, 0x66, 0x49, // Time
 	0x01, // Varint for number of transaction inputs
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -576,9 +579,10 @@ var blockOneBytes = []byte{
 	0xee,                   // 65-byte uncompressed public key
 	0xac,                   // OP_CHECKSIG
 	0x00, 0x00, 0x00, 0x00, // Lock time
+	0x00, // Varint for Signature length
 }
 
 // Transaction location information for block one transactions.
 var blockOneTxLocs = []btcwire.TxLoc{
-	{TxStart: 81, TxLen: 134},
+	{TxStart: 81, TxLen: 138},
 }
