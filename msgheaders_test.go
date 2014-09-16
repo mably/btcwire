@@ -29,7 +29,7 @@ func TestHeaders(t *testing.T) {
 	// Ensure max payload is expected value for latest protocol version.
 	// Num headers (varInt) + max allowed headers (header length + 1 byte
 	// for the number of transactions which is always 0).
-	wantPayload := uint32(162009)
+	wantPayload := uint32(170009)
 	maxPayload := msg.MaxPayloadLength(pver)
 	if maxPayload != wantPayload {
 		t.Errorf("MaxPayloadLength: wrong max payload length for "+
@@ -95,6 +95,7 @@ func TestHeadersWire(t *testing.T) {
 		0xff, 0xff, 0x00, 0x1d, // Bits
 		0x01, 0xe3, 0x62, 0x99, // Nonce
 		0x00, // TxnCount (0 for headers message)
+		0x00, // Peercoin - SignatureLength (0 for headers message)
 	}
 
 	tests := []struct {
@@ -246,6 +247,7 @@ func TestHeadersWireErrors(t *testing.T) {
 		0xff, 0xff, 0x00, 0x1d, // Bits
 		0x01, 0xe3, 0x62, 0x99, // Nonce
 		0x00, // TxnCount (0 for headers message)
+		0x00, // Peercoin - SignatureLength (0 for headers message)
 	}
 
 	// Message that forces an error by having more than the max allowed
@@ -282,6 +284,7 @@ func TestHeadersWireErrors(t *testing.T) {
 		0xff, 0xff, 0x00, 0x1d, // Bits
 		0x01, 0xe3, 0x62, 0x99, // Nonce
 		0x01, // TxnCount (should be 0 for headers message, but 1 to force error)
+		0x00, // Peercoin - SignatureLength (0 for headers message)
 	}
 
 	tests := []struct {

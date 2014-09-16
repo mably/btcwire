@@ -192,6 +192,7 @@ func TestVersionWire(t *testing.T) {
 		buf  []byte              // Wire encoding
 		pver uint32              // Protocol version for wire encoding
 	}{
+		/* Perrcoin - bloom filters not supported
 		// Latest protocol version.
 		{
 			baseVersionBIP0037,
@@ -217,6 +218,7 @@ func TestVersionWire(t *testing.T) {
 			verRelayTxFalseEncoded,
 			btcwire.BIP0037Version,
 		},
+		*/
 
 		// Protocol version BIP0035Version.
 		{
@@ -349,12 +351,14 @@ func TestVersionWireErrors(t *testing.T) {
 		{baseVersion, baseVersionEncoded, pver, 82, io.ErrShortWrite, io.ErrUnexpectedEOF},
 		// Force error in last block.
 		{baseVersion, baseVersionEncoded, pver, 98, io.ErrShortWrite, io.ErrUnexpectedEOF},
+		/* Perrcoin - bloom filters not supported
 		// Force error in relay tx - no read error should happen since
 		// it's optional.
 		{
 			baseVersionBIP0037, baseVersionBIP0037Encoded,
 			btcwire.BIP0037Version, 101, io.ErrShortWrite, nil,
 		},
+		*/
 		// Force error due to user agent too big
 		{exceedUAVer, exceedUAVerEncoded, pver, newLen, btcwireErr, btcwireErr},
 	}

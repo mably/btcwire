@@ -135,6 +135,7 @@ func (msg *MsgVersion) BtcDecode(r io.Reader, pver uint32) error {
 		}
 	}
 
+	/* Perrcoin - bloom filters not supported
 	// There was no relay transactions field before BIP0037Version, but
 	// the default behavior prior to the addition of the field was to always
 	// relay transactions.
@@ -148,6 +149,7 @@ func (msg *MsgVersion) BtcDecode(r io.Reader, pver uint32) error {
 		readElement(r, &relayTx)
 		msg.DisableRelayTx = !relayTx
 	}
+	*/
 
 	return nil
 }
@@ -191,6 +193,7 @@ func (msg *MsgVersion) BtcEncode(w io.Writer, pver uint32) error {
 		return err
 	}
 
+	/* Perrcoin - bloom filters not supported
 	// There was no relay transactions field before BIP0037Version.  Also,
 	// the wire encoding for the field is true when transactions should be
 	// relayed, so reverse it from the DisableRelayTx field.
@@ -200,6 +203,7 @@ func (msg *MsgVersion) BtcEncode(w io.Writer, pver uint32) error {
 			return err
 		}
 	}
+	*/
 	return nil
 }
 

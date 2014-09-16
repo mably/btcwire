@@ -69,12 +69,14 @@ func TestMessage(t *testing.T) {
 	msgHeaders := btcwire.NewMsgHeaders()
 	msgAlert := btcwire.NewMsgAlert([]byte("payload"), []byte("signature"))
 	msgMemPool := btcwire.NewMsgMemPool()
+	/* Peercoin - bloom filters not supported
 	msgFilterAdd := btcwire.NewMsgFilterAdd([]byte{0x01})
 	msgFilterClear := btcwire.NewMsgFilterClear()
 	msgFilterLoad := btcwire.NewMsgFilterLoad([]byte{0x01}, 10, 0, btcwire.BloomUpdateNone)
 	bh := btcwire.NewBlockHeader(&btcwire.ShaHash{}, &btcwire.ShaHash{}, 0, 0)
 	msgMerkleBlock := btcwire.NewMsgMerkleBlock(bh)
 	msgReject := btcwire.NewMsgReject("block", btcwire.RejectDuplicate, "duplicate block")
+	*/
 
 	tests := []struct {
 		in     btcwire.Message    // Value to encode
@@ -83,7 +85,7 @@ func TestMessage(t *testing.T) {
 		btcnet btcwire.BitcoinNet // Network to use for wire encoding
 		bytes  int                // Expected num bytes read/written
 	}{
-		{msgVersion, msgVersion, pver, btcwire.MainNet, 125},
+		{msgVersion, msgVersion, pver, btcwire.MainNet, 124},
 		{msgVerack, msgVerack, pver, btcwire.MainNet, 24},
 		{msgGetAddr, msgGetAddr, pver, btcwire.MainNet, 24},
 		{msgAddr, msgAddr, pver, btcwire.MainNet, 25},
@@ -99,11 +101,13 @@ func TestMessage(t *testing.T) {
 		{msgHeaders, msgHeaders, pver, btcwire.MainNet, 25},
 		{msgAlert, msgAlert, pver, btcwire.MainNet, 42},
 		{msgMemPool, msgMemPool, pver, btcwire.MainNet, 24},
+		/* Peercoin - bloom filters not supported
 		{msgFilterAdd, msgFilterAdd, pver, btcwire.MainNet, 26},
 		{msgFilterClear, msgFilterClear, pver, btcwire.MainNet, 24},
 		{msgFilterLoad, msgFilterLoad, pver, btcwire.MainNet, 35},
 		{msgMerkleBlock, msgMerkleBlock, pver, btcwire.MainNet, 110},
 		{msgReject, msgReject, pver, btcwire.MainNet, 79},
+		*/
 	}
 
 	t.Logf("Running %d tests", len(tests))
