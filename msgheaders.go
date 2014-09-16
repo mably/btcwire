@@ -57,8 +57,7 @@ func (msg *MsgHeaders) BtcDecode(r io.Reader, pver uint32) error {
 			return err
 		}
 
-		var txCount uint16 // TODO ppcoin specific why?
-		err = readElement(r, &txCount)
+		txCount, err := readVarInt(r, pver)
 		if err != nil {
 			return err
 		}
@@ -69,6 +68,23 @@ func (msg *MsgHeaders) BtcDecode(r io.Reader, pver uint32) error {
 				"transactions [count %v]", txCount)
 			return messageError("MsgHeaders.BtcDecode", str)
 		}
+
+		// Peercoin - read signature length
+		// https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.h#L922
+		// Along with empty txs vector ppcoin serializes vchBlockSig
+		// which is also empty.
+		signatureLength, err := readVarInt(r, pver)
+		if err != nil {
+			return err
+		}
+
+		// Peercoin - ensure the signature length is zero for headers.
+		if signatureLength > 0 {
+			str := fmt.Sprintf("block headers may not contain "+
+				"signature [length %v]", signatureLength)
+			return messageError("MsgHeaders.BtcDecode", str)
+		}
+
 		msg.AddBlockHeader(&bh)
 	}
 
@@ -105,7 +121,14 @@ func (msg *MsgHeaders) BtcEncode(w io.Writer, pver uint32) error {
 		if err != nil {
 			return err
 		}
-
+		// Peercoin - write signature length
+		// https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.h#L922
+		// Along with empty txs vector ppcoin serializes vchBlockSig
+		// which is also empty.
+		err = writeVarInt(w, pver, 0)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
