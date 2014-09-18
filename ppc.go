@@ -18,6 +18,8 @@ type Meta struct {
 	HashProofOfStake      ShaHash
 	Flags                 uint32
 	ChainTrust            big.Int
+	Mint                  int64
+	MoneySupply           int64
 }
 
 func (m *Meta) Serialize(w io.Writer) error {
@@ -45,6 +47,14 @@ func (m *Meta) Serialize(w io.Writer) error {
 		return e
 	}
 	binary.Write(w, binary.LittleEndian, &bytes)
+	if e != nil {
+		return e
+	}
+	binary.Write(w, binary.LittleEndian, &m.Mint)
+	if e != nil {
+		return e
+	}
+	binary.Write(w, binary.LittleEndian, &m.MoneySupply)
 	if e != nil {
 		return e
 	}
@@ -80,6 +90,15 @@ func (m *Meta) Deserialize(r io.Reader) error {
 		return e
 	}
 	m.ChainTrust.SetBytes(arr)
+
+	e = binary.Read(r, binary.LittleEndian, &m.Mint)
+	if e != nil {
+		return e
+	}
+	e = binary.Read(r, binary.LittleEndian, &m.MoneySupply)
+	if e != nil {
+		return e
+	}
 	return nil
 }
 
@@ -111,9 +130,11 @@ func (msg *MsgBlock) IsProofOfStake() bool {
 }
 
 func (m *Meta) GetSerializedSize() int {
-	return 8 + // StakeModifier         uint64
+	return 8 + // StakeModifier uint64
 		4 + // StakeModifierChecksum uint32
-		32 + // HashProofOfStake      ShaHash
-		4 + // Flags                 uint32
-		1 + len(m.ChainTrust.Bytes()) //ChainTrust            big.Int
+		32 + // HashProofOfStake ShaHash
+		4 + // Flags uint32
+		1 + len(m.ChainTrust.Bytes()) + //ChainTrust big.Int
+		8 + // Mint int64
+		8 // MoneySupply int64
 }
