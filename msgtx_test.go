@@ -59,9 +59,9 @@ func TestTx(t *testing.T) {
 	// Ensure we get the same transaction input back out.
 	sigScript := []byte{0x04, 0x31, 0xdc, 0x00, 0x1b, 0x01, 0x62}
 	txIn := btcwire.NewTxIn(prevOut, sigScript)
-	if !reflect.DeepEqual(&txIn.PreviousOutpoint, prevOut) {
+	if !reflect.DeepEqual(&txIn.PreviousOutPoint, prevOut) {
 		t.Errorf("NewTxIn: wrong prev outpoint - got %v, want %v",
-			spew.Sprint(&txIn.PreviousOutpoint),
+			spew.Sprint(&txIn.PreviousOutPoint),
 			spew.Sprint(prevOut))
 	}
 	if !bytes.Equal(txIn.SignatureScript, sigScript) {
@@ -134,7 +134,7 @@ func TestTxSha(t *testing.T) {
 	// First transaction from block 113875.
 	msgTx := btcwire.NewMsgTx()
 	txIn := btcwire.TxIn{
-		PreviousOutpoint: btcwire.OutPoint{
+		PreviousOutPoint: btcwire.OutPoint{
 			Hash:  btcwire.ShaHash{},
 			Index: 0xffffffff,
 		},
@@ -634,7 +634,7 @@ var multiTx = &btcwire.MsgTx{
 	Time:    time.Unix(0x4966bc61, 0), // 2009-01-08 20:54:25 -0600 CST
 	TxIn: []*btcwire.TxIn{
 		{
-			PreviousOutpoint: btcwire.OutPoint{
+			PreviousOutPoint: btcwire.OutPoint{
 				Hash:  btcwire.ShaHash{},
 				Index: 0xffffffff,
 			},

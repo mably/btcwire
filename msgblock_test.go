@@ -504,7 +504,7 @@ var blockOne = btcwire.MsgBlock{
 			Time:    time.Unix(0x4966bc61, 0), // 2009-01-08 20:54:25 -0600 CST
 			TxIn: []*btcwire.TxIn{
 				{
-					PreviousOutpoint: btcwire.OutPoint{
+					PreviousOutPoint: btcwire.OutPoint{
 						Hash:  btcwire.ShaHash{},
 						Index: 0xffffffff,
 					},
