@@ -106,8 +106,8 @@ func (m *Meta) Deserialize(r io.Reader) error {
 // ppcoin: the coin stake transaction is marked with the first output empty
 func (msg *MsgTx) IsCoinStake() bool {
 	return len(msg.TxIn) > 0 &&
-		(!(msg.TxIn[0].PreviousOutpoint.Hash.IsEqual(&ShaHash{}) &&
-			msg.TxIn[0].PreviousOutpoint.Index == MaxPrevOutIndex)) &&
+		(!(msg.TxIn[0].PreviousOutPoint.Hash.IsEqual(&ShaHash{}) &&
+			msg.TxIn[0].PreviousOutPoint.Index == MaxPrevOutIndex)) &&
 		len(msg.TxOut) >= 2 &&
 		(msg.TxOut[0].Value == 0 && len(msg.TxOut[0].PkScript) == 0)
 }
