@@ -439,7 +439,7 @@ func NewMsgTx() *MsgTx {
 	return &MsgTx{
 		Version: TxVersion,
 		//Time:    time.Unix(int64(0), 0),
-		Time:    time.Now(), // ppc: TODO Now() better than zero?
+		Time:    time.Unix(time.Now().Unix(), 0), // ppc: TODO(kac-) Now() better than zero?
 		TxIn:    make([]*TxIn, 0, defaultTxInOutAlloc),
 		TxOut:   make([]*TxOut, 0, defaultTxInOutAlloc),
 	}
