@@ -133,6 +133,7 @@ func TestTxSha(t *testing.T) {
 
 	// First transaction from block 113875.
 	msgTx := btcwire.NewMsgTx()
+	msgTx.Time = time.Unix(int64(0), 0)
 	txIn := btcwire.TxIn{
 		PreviousOutPoint: btcwire.OutPoint{
 			Hash:  btcwire.ShaHash{},
@@ -178,6 +179,7 @@ func TestTxWire(t *testing.T) {
 	// Empty tx message.
 	noTx := btcwire.NewMsgTx()
 	noTx.Version = 1
+	noTx.Time = time.Unix(int64(0), 0)
 	noTxEncoded := []byte{
 		0x01, 0x00, 0x00, 0x00, // Version
 		0x00, 0x00, 0x00, 0x00, // Time
@@ -377,6 +379,7 @@ func TestTxWireErrors(t *testing.T) {
 func TestTxSerialize(t *testing.T) {
 	noTx := btcwire.NewMsgTx()
 	noTx.Version = 1
+	noTx.Time = time.Unix(int64(0), 0)
 	noTxEncoded := []byte{
 		0x01, 0x00, 0x00, 0x00, // Version
 		0x00, 0x00, 0x00, 0x00, // Time
