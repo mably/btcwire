@@ -103,7 +103,7 @@ func (m *Meta) Deserialize(r io.Reader) error {
 }
 
 // https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.h#L528
-// ppcoin: the coin stake transaction is marked with the first output empty
+// ppc: the coin stake transaction is marked with the first output empty
 func (msg *MsgTx) IsCoinStake() bool {
 	return len(msg.TxIn) > 0 &&
 		(!(msg.TxIn[0].PreviousOutPoint.Hash.IsEqual(&ShaHash{}) &&
@@ -112,18 +112,18 @@ func (msg *MsgTx) IsCoinStake() bool {
 		(msg.TxOut[0].Value == 0 && len(msg.TxOut[0].PkScript) == 0)
 }
 
-// ppcoin
+// ppc:
 func (t *TxOut) IsEmpty() bool {
 	return t.Value == 0 && len(t.PkScript) == 0
 }
 
-// Peercoin https://github.com/ppcoin/ppcoin/blob/master/src/main.h#L217
+// ppc: https://github.com/ppcoin/ppcoin/blob/master/src/main.h#L217
 func (o *OutPoint) IsNull() bool {
 	return o.Hash.IsEqual(&ZeroSha) && o.Index == MaxPrevOutIndex
 }
 
 // https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.h#L962
-// ppcoin: two types of block: proof-of-work or proof-of-stake
+// ppc: two types of block: proof-of-work or proof-of-stake
 func (msg *MsgBlock) IsProofOfStake() bool {
 	return len(msg.Transactions) > 1 &&
 		msg.Transactions[1].IsCoinStake()
