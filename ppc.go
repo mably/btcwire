@@ -12,11 +12,18 @@ import (
 
 var ZeroSha = ShaHash{}
 
+// Stake TODO(?) golint
+type Stake struct {
+	OutPoint OutPoint
+	Time     int64
+}
+
 type Meta struct {
 	StakeModifier         uint64
-	StakeModifierChecksum uint32 // checksum of index; in-memeory only (main.h)
-	HashProofOfStake      ShaHash
+	StakeModifierChecksum uint32 // checksum of index; in-memory only (main.h)
 	Flags                 uint32
+	HashProofOfStake      ShaHash
+	PrevoutStake          Stake
 	ChainTrust            big.Int
 	Mint                  int64
 	MoneySupply           int64
@@ -36,6 +43,10 @@ func (m *Meta) Serialize(w io.Writer) error {
 		return e
 	}
 	binary.Write(w, binary.LittleEndian, &m.HashProofOfStake)
+	if e != nil {
+		return e
+	}
+	writeStake(w, 0, 0, &m.PrevoutStake)
 	if e != nil {
 		return e
 	}
@@ -78,7 +89,10 @@ func (m *Meta) Deserialize(r io.Reader) error {
 	if e != nil {
 		return e
 	}
-
+	e = readStake(r, 0, 0, &m.PrevoutStake)
+	if e != nil {
+		return e
+	}
 	var blen byte
 	e = binary.Read(r, binary.LittleEndian, &blen)
 	if e != nil {
@@ -133,8 +147,46 @@ func (m *Meta) GetSerializedSize() int {
 	return 8 + // StakeModifier uint64
 		4 + // StakeModifierChecksum uint32
 		32 + // HashProofOfStake ShaHash
+		40 + // Outpoint Hash 32 bytes + Outpoint Index 4 bytes + Time 4 bytes
 		4 + // Flags uint32
 		1 + len(m.ChainTrust.Bytes()) + //ChainTrust big.Int
 		8 + // Mint int64
 		8 // MoneySupply int64
+}
+
+// readStake reads the stake from r.
+func readStake(r io.Reader, pver uint32, version int32, stake *Stake) error {
+	var op OutPoint
+	err := readOutPoint(r, pver, version, &op)
+	if err != nil {
+		return err
+	}
+	stake.OutPoint = op
+
+	var buf [4]byte
+	_, err = io.ReadFull(r, buf[:])
+	if err != nil {
+		return err
+	}
+	sec := binary.LittleEndian.Uint32(buf[:])
+	stake.Time = int64(sec)
+
+	return nil
+}
+
+// writeStake encodes stake to w.
+func writeStake(w io.Writer, pver uint32, version int32, stake *Stake) error {
+	err := writeOutPoint(w, pver, version, &stake.OutPoint)
+	if err != nil {
+		return err
+	}
+
+	var buf [4]byte
+	binary.LittleEndian.PutUint32(buf[:], uint32(stake.Time))
+	_, err = w.Write(buf[:])
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
