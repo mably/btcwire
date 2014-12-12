@@ -20,6 +20,7 @@ type Meta struct {
 	ChainTrust            big.Int
 	Mint                  int64
 	MoneySupply           int64
+	TxOffsets			  []uint32
 }
 
 func (m *Meta) Serialize(w io.Writer) error {
@@ -58,6 +59,19 @@ func (m *Meta) Serialize(w io.Writer) error {
 	if e != nil {
 		return e
 	}
+
+	binary.Write(w, binary.LittleEndian, uint32(len(m.TxOffsets)))
+	if e != nil {
+		return e
+	}
+
+	for _, txOffset := range m.TxOffsets {
+		binary.Write(w, binary.LittleEndian, txOffset)
+		if e != nil {
+			return e
+		}
+	}
+
 	return nil
 }
 
@@ -99,6 +113,21 @@ func (m *Meta) Deserialize(r io.Reader) error {
 	if e != nil {
 		return e
 	}
+
+	var txOffsetCount uint32
+	e = binary.Read(r, binary.LittleEndian, &txOffsetCount)
+	if e != nil {
+		return e
+	}
+
+	m.TxOffsets = make([]uint32, txOffsetCount)
+	for i := uint32(0); i < txOffsetCount; i++ {
+		e := binary.Read(r, binary.LittleEndian, &m.TxOffsets[i])
+		if e != nil {
+			return e
+		}
+	}
+
 	return nil
 }
 
@@ -136,5 +165,7 @@ func (m *Meta) GetSerializedSize() int {
 		4 + // Flags uint32
 		1 + len(m.ChainTrust.Bytes()) + //ChainTrust big.Int
 		8 + // Mint int64
-		8 // MoneySupply int64
+		8 + // MoneySupply int64
+		4 + // TxOffsets array size uint32
+		4 * len(m.TxOffsets) // TxOffsets uint32 array
 }
