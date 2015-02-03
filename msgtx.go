@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"time"
+	"strconv"
 )
 
 const (
@@ -74,6 +75,21 @@ func NewOutPoint(hash *ShaHash, index uint32) *OutPoint {
 		Hash:  *hash,
 		Index: index,
 	}
+}
+
+// TxIn defines a bitcoin transaction input.
+func (o OutPoint) String() string {
+	// Allocate enough for hash string, colon, and 10 digits.  Although
+	// at the time of writing, the number of digits can be no greater than
+	// the length of the decimal representation of maxTxOutPerMessage, the
+	// maximum message payload may increase in the future and this
+	// optimization may go unnoticed, so allocate space for 10 decimal
+	// digits, which will fit any uint32.
+	buf := make([]byte, 2*HashSize+1, 2*HashSize+1+10)
+	copy(buf, o.Hash.String())
+	buf[2*HashSize] = ':'
+	buf = strconv.AppendUint(buf, uint64(o.Index), 10)
+	return string(buf)
 }
 
 // TxIn defines a bitcoin transaction input.
