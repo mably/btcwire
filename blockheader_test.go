@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/btcsuite/btcwire"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/mably/btcwire"
 )

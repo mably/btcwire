@@ -118,6 +118,13 @@ func TestNewShaHashFromStr(t *testing.T) {
 
 		// Single digit hash.
 		{
+			"",
+			btcwire.ShaHash{},
+			nil,
+		},
+
+		// Single digit hash.
+		{
 			"1",
 			btcwire.ShaHash([btcwire.HashSize]byte{ // Make go vet happy.
 				0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
